@@ -1,11 +1,13 @@
 package org.trusky.common.impl.startparameters.parser;
 
-import org.trusky.common.api.startparameters.parser.EditableStartparameterParserContainler;
+import org.trusky.common.api.startparameters.parser.CommandLine;
+import org.trusky.common.api.startparameters.parser.EditableStartparameterParserContainer;
 import org.trusky.common.api.startparameters.parser.StartOptionParser;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
-public class StartparameterParserContainerImpl implements EditableStartparameterParserContainler {
+public class StartparameterParserContainerImpl implements EditableStartparameterParserContainer {
 
 	private final ArrayList<StartOptionParser> parserList = new ArrayList<>();
 
@@ -19,6 +21,7 @@ public class StartparameterParserContainerImpl implements EditableStartparameter
 		return parserList.get(index);
 	}
 
+
 	@Override
 	public void addParser(StartOptionParser parser) {
 
@@ -28,4 +31,13 @@ public class StartparameterParserContainerImpl implements EditableStartparameter
 
 		parserList.add(parser);
 	}
+
+	@Override
+	public Optional<StartOptionParser> findParserForOption(CommandLine cmdLine) {
+
+		return parserList.stream()
+				.filter(p -> p.canParse(cmdLine))
+				.findFirst();
+	}
+
 }
