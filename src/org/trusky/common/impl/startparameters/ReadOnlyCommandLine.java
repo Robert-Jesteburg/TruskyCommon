@@ -1,6 +1,6 @@
 package org.trusky.common.impl.startparameters;
 
-import org.trusky.common.api.startparameters.parser.CommandLine;
+import org.trusky.common.api.startparameters.CommandLine;
 import org.trusky.common.api.startparameters.parser.StartOptionParser;
 
 /**

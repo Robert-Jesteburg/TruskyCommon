@@ -1,14 +1,18 @@
 package org.trusky.common.impl.startparameters;
 
+import org.trusky.common.api.startparameters.EditableStartParameterContainer;
 import org.trusky.common.api.startparameters.StartOption;
 import org.trusky.common.api.startparameters.optionvalue.OptionValue;
-import org.trusky.common.api.startparameters.parser.EditableStartParameterContainer;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This is an internal helper class that is instantiated in the common library and therefore mustn't be created by
+ * injection from outside this library.
+ */
 public class StartParameterContainerImpl implements EditableStartParameterContainer {
 
 	private final Map<String, List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>>> optionMap =

@@ -8,21 +8,19 @@
  * c) Irreführung durch Angabe bewusst falscher Daten
  */
 
-package org.trusky.common.impl.startparameters.parser.module;
+package org.trusky.common.api.util;
 
 import com.google.inject.AbstractModule;
-import org.trusky.common.api.startparameters.builder.BaseDirOptionParserBuilder;
-import org.trusky.common.impl.startparameters.parser.BaseDirOptionParserBuilderImpl;
+import org.trusky.common.impl.util.CommonSystemSettingsImpl;
+import org.trusky.common.impl.util.StringUtilitiesImpl;
 
-public class ParserBuilderModule extends AbstractModule {
+public class CommonUtilModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
 		super.configure();
 
-		bind(BaseDirOptionParserBuilder.class).to(BaseDirOptionParserBuilderImpl.class);
-
-		// FIXME add the bindings for the other builders
-		// FIXME add the module describing the bindings of the options (may be not necessary?)
+		bind(StringUtilities.class).to(StringUtilitiesImpl.class);
+		bind(CommonSystemSettings.class).to(CommonSystemSettingsImpl.class);
 	}
 }

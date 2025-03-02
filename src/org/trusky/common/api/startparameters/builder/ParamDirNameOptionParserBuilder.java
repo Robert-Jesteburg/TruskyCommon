@@ -2,7 +2,7 @@ package org.trusky.common.api.startparameters.builder;
 
 import org.trusky.common.api.startparameters.parser.ParamDirNameOptionParser;
 
-public interface ParamDirNameOptionParserBuilder {
+public interface ParamDirNameOptionParserBuilder extends OptionParserBuilder {
 
 
 	public ParamDirNameOptionParserBuilder setOptionName(String optionName);

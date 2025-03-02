@@ -2,7 +2,7 @@ package org.trusky.common.api.startparameters.builder;
 
 import org.trusky.common.api.startparameters.parser.ConfigurationFilenameOptionParser;
 
-public interface ConfigurationFilenameOptionParserBuilder {
+public interface ConfigurationFilenameOptionParserBuilder extends OptionParserBuilder {
 
 	public ConfigurationFilenameOptionParserBuilder setOptionName(String optionName);
 

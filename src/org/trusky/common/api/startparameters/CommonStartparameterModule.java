@@ -8,30 +8,20 @@
  * c) Irreführung durch Angabe bewusst falscher Daten
  */
 
-package org.trusky.common.api.injection;
+package org.trusky.common.api.startparameters;
 
 import com.google.inject.AbstractModule;
 import org.trusky.common.api.startparameters.builder.module.CommonParserBuilderModule;
-import org.trusky.common.api.startparameters.module.CommonStartparametersModule;
-import org.trusky.common.api.util.CommonUtilModule;
 
 /**
- * Specify this to build the injector with all the dependencies for the common library. You can specify additional
- * (that is, modules describing your own project's injection rules) while creating the injector.
+ * Dependencies for all the startparameter package
  */
-public class CommonGuiceModule extends AbstractModule {
+public class CommonStartparameterModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
 		super.configure();
 
-		install(new CommonStartparametersModule());
-
 		install(new CommonParserBuilderModule());
-
-		install(new CommonUtilModule());
-
-		//bind(CommandLine.class).to(CommandLineImpl.class);
-
 	}
 }

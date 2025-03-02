@@ -8,13 +8,13 @@ import java.util.*;
  * Class that can be used to easily create a start option without to have to create the same methods over and over
  * again.
  */
-public abstract class AbstractStartOption<DEFAULT_VAL_TYPE extends OptionValue, SUB_VAL_TYPE extends OptionValue> implements
+public abstract class AbstractStartOption<DEFAULT_VAL_TYPE extends OptionValue<?>,
+		SUB_VAL_TYPE extends OptionValue<?>> implements
 		StartOption<DEFAULT_VAL_TYPE, SUB_VAL_TYPE> {
 
 	private final String optionName;
-
-	private Optional<DEFAULT_VAL_TYPE> defaultValue;
 	private final Map<String, List<SUB_VAL_TYPE>> subOptionMap = new HashMap<>();
+	private Optional<DEFAULT_VAL_TYPE> defaultValue;
 
 	public AbstractStartOption(String optionName) {
 		this.optionName = optionName;
@@ -40,6 +40,15 @@ public abstract class AbstractStartOption<DEFAULT_VAL_TYPE extends OptionValue, 
 	@Override
 	public Optional<DEFAULT_VAL_TYPE> getDefaultValue() {
 		return defaultValue;
+	}
+
+	/**
+	 * Set the default value. Passing in NULL will result in the default value being empty.
+	 *
+	 * @param value
+	 */
+	protected void setDefaultValue(DEFAULT_VAL_TYPE value) {
+		this.defaultValue = (value == null) ? Optional.empty() : Optional.of(value);
 	}
 
 	@Override
@@ -82,7 +91,7 @@ public abstract class AbstractStartOption<DEFAULT_VAL_TYPE extends OptionValue, 
 		if (isSubOptionPresent(subOptionName)) {
 
 			List<SUB_VAL_TYPE> subValueList = subOptionMap.get(subOptionName);
-			if ((subValueList != null) && !subValueList.isEmpty()) {
+			if ((subValueList == null) || subValueList.isEmpty()) {
 				return new LinkedList<>();
 			}
 
@@ -94,15 +103,6 @@ public abstract class AbstractStartOption<DEFAULT_VAL_TYPE extends OptionValue, 
 
 		return valueList;
 
-	}
-
-	/**
-	 * Set the default value. Passing in NULL will result in the default value being empty.
-	 *
-	 * @param value
-	 */
-	protected void setDefaultValue(DEFAULT_VAL_TYPE value) {
-		this.defaultValue = (value == null) ? Optional.empty() : Optional.of(value);
 	}
 
 	/**

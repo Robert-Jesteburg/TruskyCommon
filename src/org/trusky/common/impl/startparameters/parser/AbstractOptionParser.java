@@ -1,7 +1,7 @@
 package org.trusky.common.impl.startparameters.parser;
 
-import org.trusky.common.api.startparameters.parser.CommandLine;
-import org.trusky.common.api.startparameters.parser.EditableStartParameterContainer;
+import org.trusky.common.api.startparameters.CommandLine;
+import org.trusky.common.api.startparameters.EditableStartParameterContainer;
 import org.trusky.common.api.startparameters.parser.StartOptionParser;
 
 import java.util.Optional;

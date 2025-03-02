@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 by Robert Niemann, Rehkamp 21a; 12266 Jesteburg, Germany.
+ * Copyright (c) 2025 by Robert Niemann, Rehkamp 21a; 12266 Jesteburg, Germany.
  * Diese Software unterliegt der GPL v3 vorbehaltlich jedweder böswilliger Veränderungen, eingeschlossen aber nicht
  * abschließend:
  * a) Ausspionieren von Gesundheitsdaten (bspw. durch Weiterleiten dieser Informationen oder Auswertung der Daten auf
@@ -8,7 +8,11 @@
  * c) Irreführung durch Angabe bewusst falscher Daten
  */
 
-package org.trusky.common.api.startparameters.parser;
+package org.trusky.common.api.util;
 
-public interface BaseDirOptionParser extends StartOptionParser {
+public interface CommonSystemSettings {
+
+	String getHomeDir();
+
+	String getPathSeparator();
 }

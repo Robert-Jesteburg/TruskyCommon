@@ -2,14 +2,14 @@ package org.trusky.common.api.startparameters.builder;
 
 import org.trusky.common.api.startparameters.parser.Log4JOptionParser;
 
-public interface Log4JOptionParserBuilder {
+public interface Log4JOptionParserBuilder extends OptionParserBuilder {
 
-	public Log4JOptionParserBuilder setOptionName(String optionName);
+	Log4JOptionParserBuilder setOptionName(String optionName);
 
-	public Log4JOptionParserBuilder setOptionNameIsCaseSensitive(boolean isCaseSensitive);
+	Log4JOptionParserBuilder setOptionNameIsCaseSensitive(boolean isCaseSensitive);
 
-	public Log4JOptionParserBuilder setDefaultParameterValue(String defaultValue);
+	Log4JOptionParserBuilder setDefaultParameterValue(String defaultValue);
 
-	public Log4JOptionParser build();
+	Log4JOptionParser build();
 
 }

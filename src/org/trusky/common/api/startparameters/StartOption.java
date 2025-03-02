@@ -12,7 +12,7 @@ import java.util.Optional;
  * Option class; there may or may not a value following
  * (in the case of --configDir there will be one: The directory base name).
  */
-public interface StartOption<DEFAULT_VAL_TYPE extends OptionValue, SUB_VAL_TYPE extends OptionValue> {
+public interface StartOption<DEFAULT_VAL_TYPE extends OptionValue<?>, SUB_VAL_TYPE extends OptionValue<?>> {
 
 	public String getOptionName();
 
