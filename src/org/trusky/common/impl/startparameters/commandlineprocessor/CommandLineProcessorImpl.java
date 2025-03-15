@@ -28,11 +28,14 @@ public class CommandLineProcessorImpl implements CommandLineProcessor {
 
 			Optional<StartOptionParser> parserOpt = parserContainer.findParserForOption(cmdLine);
 			if (parserOpt.isEmpty()) {
+
+				String unknownOption = cmdLine.peekNext();
+
 				throw new InvalidOptionException( //
 						"Can't obtain parser to parse \"" + //
-								cmdLine.peekNext() + //
-								"\" option."  //
-				);
+								unknownOption + //
+								"\" option.", //
+						unknownOption);
 			}
 
 			parserOpt.get()

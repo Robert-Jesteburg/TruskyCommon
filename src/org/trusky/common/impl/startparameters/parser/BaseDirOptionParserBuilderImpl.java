@@ -15,7 +15,6 @@ import java.util.Optional;
 public class BaseDirOptionParserBuilderImpl extends
 		AbstractOptionParserBuilder<BaseDirOptionParserBuilder, String> implements BaseDirOptionParserBuilder {
 
-
 	@Inject
 	private BaseDirOptionParserBuilderImpl() {
 		super("--baseDir", true, createDefaultParameter());

@@ -12,8 +12,10 @@ public interface StartParameterContainer {
 	/**
 	 * Get the Start option if present, else empty.
 	 *
-	 * @param optionName
+	 * @param optionName The name of the option
 	 * @return A list of Start options if present, else empty list.
 	 */
-	public List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>> getOption(String optionName);
+	List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>> getOption(String optionName);
+
+	boolean isEmpty();
 }

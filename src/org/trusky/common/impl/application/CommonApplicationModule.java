@@ -8,16 +8,16 @@
  * c) Irreführung durch Angabe bewusst falscher Daten
  */
 
-package org.trusky.common.api.startparameters.builder;
+package org.trusky.common.impl.application;
 
-import org.trusky.common.api.startparameters.parser.StartOptionParser;
+import com.google.inject.AbstractModule;
 
-public interface OptionParserBuilder {
+public class CommonApplicationModule extends AbstractModule {
 
-	/**
-	 * @return The name of the option. This can be the default name or the name that has been set on creation.
-	 */
-	String getOptionName();
+	@Override
+	protected void configure() {
+		super.configure();
 
-	StartOptionParser build();
+		bind(StartparameterManager.class).to(StartparameterManagerImpl.class);
+	}
 }

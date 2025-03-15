@@ -11,8 +11,12 @@
 package org.trusky.common.api.startparameters.module;
 
 import com.google.inject.AbstractModule;
+import org.trusky.common.api.startparameters.CommandLineProcessor;
+import org.trusky.common.api.startparameters.EditableStartparameterParserContainer;
 import org.trusky.common.api.startparameters.StartParameterContainer;
 import org.trusky.common.impl.startparameters.StartParameterContainerImpl;
+import org.trusky.common.impl.startparameters.commandlineprocessor.CommandLineProcessorImpl;
+import org.trusky.common.impl.startparameters.parser.StartparameterParserContainerImpl;
 
 public class CommonStartparametersModule extends AbstractModule {
 
@@ -27,9 +31,8 @@ public class CommonStartparametersModule extends AbstractModule {
 		// bind(CommandLine.class).to(CommandLineImpl.class);
 
 		bind(StartParameterContainer.class).to(StartParameterContainerImpl.class);
-
-		// Das hier sollte nie über das Interface erzeugt werden.
-		// bind(EditableStartparameterParserContainer.class).to(StartParameterContainerImpl.class);
+		bind(CommandLineProcessor.class).to(CommandLineProcessorImpl.class);
+		bind(EditableStartparameterParserContainer.class).to(StartparameterParserContainerImpl.class);
 
 	}
 }

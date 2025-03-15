@@ -14,6 +14,7 @@ import com.google.inject.AbstractModule;
 import org.trusky.common.api.startparameters.builder.module.CommonParserBuilderModule;
 import org.trusky.common.api.startparameters.module.CommonStartparametersModule;
 import org.trusky.common.api.util.CommonUtilModule;
+import org.trusky.common.impl.application.CommonApplicationModule;
 
 /**
  * Specify this to build the injector with all the dependencies for the common library. You can specify additional
@@ -26,10 +27,10 @@ public class CommonGuiceModule extends AbstractModule {
 		super.configure();
 
 		install(new CommonStartparametersModule());
-
 		install(new CommonParserBuilderModule());
-
 		install(new CommonUtilModule());
+		install(new CommonApplicationModule());
+
 
 		//bind(CommandLine.class).to(CommandLineImpl.class);
 

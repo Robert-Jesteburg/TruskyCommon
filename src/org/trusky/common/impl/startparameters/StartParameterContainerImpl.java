@@ -46,12 +46,17 @@ public class StartParameterContainerImpl implements EditableStartParameterContai
 
 			List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>> storedList =
 					optionMap.get(optionName);
-			actualList = new LinkedList<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>>(storedList);
+			actualList = new LinkedList<>(storedList);
 
 		} else {
 			actualList = new LinkedList<>();
 		}
 
 		return actualList;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return optionMap.isEmpty();
 	}
 }

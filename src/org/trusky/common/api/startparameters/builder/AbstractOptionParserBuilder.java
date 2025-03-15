@@ -11,11 +11,10 @@ import java.util.Optional;
  */
 public abstract class AbstractOptionParserBuilder<BUILDER, DEFAULT_PARAM_TYPE> {
 
+	private final StringUtilities stringUtilities;
 	private String optionName;
 	private boolean isCaseSensitive;
 	private Optional<DEFAULT_PARAM_TYPE> defaultPameterValueOpt = Optional.empty();
-
-	private final StringUtilities stringUtilities;
 
 	protected AbstractOptionParserBuilder(String optionName, boolean isCaseSensitive) {
 		this(optionName, isCaseSensitive, null);
@@ -37,8 +36,8 @@ public abstract class AbstractOptionParserBuilder<BUILDER, DEFAULT_PARAM_TYPE> {
 	/**
 	 * Checks general requirements for option names and throws an IllegalArgumentExceptions if cretierias aer not met.
 	 *
-	 * @param optionName
-	 * @throws IllegalArgumentException
+	 * @param optionName The option name
+	 * @throws IllegalArgumentException If the option name is illegal
 	 */
 	protected void checkOptionName(String optionName) throws IllegalArgumentException {
 
@@ -55,6 +54,7 @@ public abstract class AbstractOptionParserBuilder<BUILDER, DEFAULT_PARAM_TYPE> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public BUILDER setOptionName(String optionName) {
 
 		checkOptionName(optionName);
@@ -62,18 +62,20 @@ public abstract class AbstractOptionParserBuilder<BUILDER, DEFAULT_PARAM_TYPE> {
 		return (BUILDER) this;
 	}
 
+	@SuppressWarnings("unchecked")
 	public BUILDER setOptionNameIsCaseSensitive(boolean isCaseSensitive) {
 		this.isCaseSensitive = isCaseSensitive;
 		return (BUILDER) this;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected BUILDER setDefaultParameterValue(DEFAULT_PARAM_TYPE defaultParameterValue) {
 		this.defaultPameterValueOpt = (defaultParameterValue == null) ? Optional.empty() :
 				Optional.of(defaultParameterValue);
 		return (BUILDER) this;
 	}
 
-	protected String getOptionName() {
+	public String getOptionName() {
 		return optionName;
 	}
 

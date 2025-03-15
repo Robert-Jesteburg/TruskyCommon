@@ -8,16 +8,14 @@
  * c) Irreführung durch Angabe bewusst falscher Daten
  */
 
-package org.trusky.common.api.startparameters.builder;
+package org.trusky.common.api.application;
 
-import org.trusky.common.api.startparameters.parser.StartOptionParser;
+import javafx.application.Application;
 
-public interface OptionParserBuilder {
+public abstract class AbstractFxApplication extends Application {
 
-	/**
-	 * @return The name of the option. This can be the default name or the name that has been set on creation.
-	 */
-	String getOptionName();
+	public static void main(String[] args) {
 
-	StartOptionParser build();
+	}
+
 }
