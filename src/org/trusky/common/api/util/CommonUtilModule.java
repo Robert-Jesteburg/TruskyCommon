@@ -11,6 +11,8 @@
 package org.trusky.common.api.util;
 
 import com.google.inject.AbstractModule;
+import org.trusky.common.impl.util.CommonLog4JConfigurationUtilsImpl;
+import org.trusky.common.impl.util.CommonStartParametersUtilImpl;
 import org.trusky.common.impl.util.CommonSystemSettingsImpl;
 import org.trusky.common.impl.util.StringUtilitiesImpl;
 
@@ -22,5 +24,7 @@ public class CommonUtilModule extends AbstractModule {
 
 		bind(StringUtilities.class).to(StringUtilitiesImpl.class);
 		bind(CommonSystemSettings.class).to(CommonSystemSettingsImpl.class);
+		bind(CommonStartparametersUtils.class).to(CommonStartParametersUtilImpl.class);
+		bind(CommonLog4JConfigurationUtilsImpl.class).to(CommonLog4JConfigurationUtilsImpl.class);
 	}
 }

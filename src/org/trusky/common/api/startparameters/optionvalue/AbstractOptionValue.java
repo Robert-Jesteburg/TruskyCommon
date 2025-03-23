@@ -7,13 +7,13 @@ public abstract class AbstractOptionValue<BASE_TYPE> implements OptionValue<BASE
 	private Optional<BASE_TYPE> val = Optional.empty();
 
 	@Override
-	public void setValue(BASE_TYPE val) {
-		this.val = Optional.of(val);
+	public Optional<BASE_TYPE> getValue() {
+		return val;
 	}
 
 	@Override
-	public Optional<BASE_TYPE> getValue() {
-		return val;
+	public void setValue(BASE_TYPE val) {
+		this.val = val == null ? Optional.empty() : Optional.of(val);
 	}
 
 

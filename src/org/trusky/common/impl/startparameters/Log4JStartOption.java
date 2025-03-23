@@ -8,8 +8,10 @@ import org.trusky.common.api.startparameters.optionvalue.StringOptionValue;
  */
 public class Log4JStartOption extends AbstractStartOption<StringOptionValue, StringOptionValue> {
 
+	private final static String DEFAULT_OPTION_NAME = "--log4JConfigurationFile";
+
 	public Log4JStartOption() {
-		this("--log4JConfigurationFile");
+		this(DEFAULT_OPTION_NAME);
 	}
 
 	private Log4JStartOption(String optionName) {
