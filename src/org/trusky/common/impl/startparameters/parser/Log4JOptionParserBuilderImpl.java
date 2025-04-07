@@ -10,7 +10,7 @@ public class Log4JOptionParserBuilderImpl extends
 		AbstractOptionParserBuilder<Log4JOptionParserBuilder, String> implements Log4JOptionParserBuilder {
 
 	private static final String DEFAULT_OPTION_NAME = "--log4J";
-	private static final String DEFAULT_CONFIG_FILENAME = "log4J.xml";
+	private static final String DEFAULT_CONFIG_FILENAME = "log4J-template.xml";
 
 	@Inject
 	private Log4JOptionParserBuilderImpl() {

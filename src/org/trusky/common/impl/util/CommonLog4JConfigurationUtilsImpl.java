@@ -44,6 +44,13 @@ public class CommonLog4JConfigurationUtilsImpl implements CommonLog4JConfigurati
 		StringBuilder sbAbsolutePath = new StringBuilder();
 
 		String baseDir = extractFromParameters(baseDirOptionName, parameterSupplier, defaultBaseDir);
+		if (baseDir.startsWith("~")) {
+			String homeDir = stripTrailingString(commonSystemSettings.getHomeDir(),
+					commonSystemSettings.getPathSeparator());
+			baseDir = baseDir.replace("~", homeDir);
+		}
+
+
 		String appDirName = extractFromParameters(appDirOptionName, parameterSupplier, defaultAppDir);
 
 		if (appDirName.isBlank() || appDirName.equals(commonSystemSettings.getPathSeparator())) {
@@ -80,7 +87,8 @@ public class CommonLog4JConfigurationUtilsImpl implements CommonLog4JConfigurati
 	}
 
 	private String stripTrailingString(String string, String trailingPart) {
-		return string.substring(0, string.length() - trailingPart.length());
+
+		return string.endsWith(trailingPart) ? string.substring(0, string.length() - trailingPart.length()) : string;
 	}
 
 	private String extractFromParameters(String optionName,
@@ -103,7 +111,7 @@ public class CommonLog4JConfigurationUtilsImpl implements CommonLog4JConfigurati
 	public String getLog4JConfigurationFileName(String log4JFileNameOptionName, Function<String,
 			List<StringOptionValue>> parameterSupplier) {
 
-		final String log4JDefaultFileName = "log4J.xml";
+		final String log4JDefaultFileName = "log4J-template.xml";
 
 		String fileName;
 

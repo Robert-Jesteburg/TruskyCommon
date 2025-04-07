@@ -15,19 +15,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.trusky.common.api.injection.CommonGuiceModule;
-import org.trusky.common.api.injection.InjectorFactory;
+import org.trusky.common.impl.startparameters.util.CommonStartparameterUtilsFake;
+import org.trusky.common.impl.startparameters.util.CommonSystemSettingsFake;
 import org.trusky.common.impl.util.CommonLog4JConfigurationUtilsImpl;
 
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
 
 class CommonLog4JConfigurationUtilsTest {
 
@@ -51,11 +46,9 @@ class CommonLog4JConfigurationUtilsTest {
 	private final String EXPECTED_DIR = HOME_DIR_MIT_SLASH + APP_DIR_OHNE_SLASH;
 	private final String EXPECTED_FILENAME_WITH_PATH = HOME_DIR_MIT_SLASH + APP_DIR_MIT_SLASH + CONFIG_FILE_NAME;
 
-	@Mock
-	private CommonSystemSettings commonSystemSettings;
+	private CommonSystemSettingsFake commonSystemSettings = new CommonSystemSettingsFake();
 
-	@Mock
-	private CommonStartparametersUtils startparametersUtils;
+	private CommonStartparameterUtilsFake startparametersUtils = new CommonStartparameterUtilsFake();
 
 	private static Stream<Arguments> provideParameterContents() {
 
@@ -77,12 +70,8 @@ class CommonLog4JConfigurationUtilsTest {
 
 	@BeforeEach
 	void setUp() {
-		InjectorFactory.setModule(new CommonGuiceModule());
-
-		MockitoAnnotations.initMocks(this);
-
-		when(commonSystemSettings.getPathSeparator()).thenReturn("/");
-		when(commonSystemSettings.getHomeDir()).thenReturn(System.getProperty("user.home"));
+		commonSystemSettings.setPathSeparator("/");
+		commonSystemSettings.setHomeDir(System.getProperty("user.home"));
 	}
 
 
@@ -95,9 +84,10 @@ class CommonLog4JConfigurationUtilsTest {
 	void testInput(String homeDir, String appDir, String configFile) {
 
 		// GIVEN
-		when(startparametersUtils.getStringStartparameterWithDefault(eq(OPT_BASEDIR_NAME), any(), any())).thenReturn(homeDir);
-		when(startparametersUtils.getStringStartparameterWithDefault(eq(OPT_APPDIR_NAME), any(), any())).thenReturn(appDir);
-		when(startparametersUtils.getStringStartparameterWithDefault(eq(OPT_CONFIG_NAME), any(), any())).thenReturn(configFile);
+		startparametersUtils.reset();
+		startparametersUtils.whenOptionnameThenReturn(OPT_BASEDIR_NAME, homeDir);
+		startparametersUtils.whenOptionnameThenReturn(OPT_APPDIR_NAME, appDir);
+		startparametersUtils.whenOptionnameThenReturn(OPT_CONFIG_NAME, configFile);
 
 		CommonLog4JConfigurationUtils util = //
 				new CommonLog4JConfigurationUtilsImpl(startparametersUtils, commonSystemSettings);
@@ -109,10 +99,14 @@ class CommonLog4JConfigurationUtilsTest {
 				util.getFullConfigurationFileNameWithPath(OPT_BASEDIR_NAME, OPT_APPDIR_NAME, OPT_CONFIG_NAME, null);
 
 		// THEN
+		String pathSep = commonSystemSettings.getPathSeparator();
+		String expectedHomeDir = (homeDir.equals("~")) ? commonSystemSettings.getHomeDir() + pathSep + appDir :
+				EXPECTED_DIR;
+		String expectedConfigFileWithPath = expectedHomeDir + pathSep + configFile;
 		assertAll( //
-				() -> assertThat(baseDir).isEqualTo(EXPECTED_DIR), //
+				() -> assertThat(baseDir).isEqualTo(expectedHomeDir), //
 				() -> assertThat(configFileName).isEqualTo(CONFIG_FILE_NAME), //
-				() -> assertThat(full).isEqualTo(EXPECTED_FILENAME_WITH_PATH));
+				() -> assertThat(full).isEqualTo(expectedConfigFileWithPath));
 
 	}
 

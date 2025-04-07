@@ -19,25 +19,34 @@ import org.trusky.common.api.startparameters.builder.OptionParserBuilder;
 import org.trusky.common.api.startparameters.builder.ParamDirNameOptionParserBuilder;
 import org.trusky.common.api.startparameters.exceptions.StartParameterException;
 import org.trusky.common.api.startparameters.optionvalue.OptionValue;
+import org.trusky.common.api.startparameters.optionvalue.StringOptionValue;
+import org.trusky.common.api.util.CommonFileUtilities;
+import org.trusky.common.api.util.CommonLog4JConfigurationUtils;
 import org.trusky.common.api.util.CommonStartparametersUtils;
 import org.trusky.common.api.util.CommonSystemSettings;
 import org.trusky.common.impl.application.StartparameterManager;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public abstract class AbstractApplication implements CommonApplication {
 
 	private final StartparameterManager startparameterManager;
 	private final CommonSystemSettings commonSystemSettings;
 	private final CommonStartparametersUtils commonStartparametersUtils;
+	private final CommonLog4JConfigurationUtils commonLog4JConfigurationUtils;
+	private final CommonFileUtilities commonFileUtilities;
 	/**
 	 * Pointer to the one and only instance.
 	 */
 	private AbstractApplication thiz;
 
-	protected AbstractApplication() {
+	protected AbstractApplication(CommonFileUtilities commonFileUtilities) {
+
 
 		/*
 		 * As the start parameter manager is an internal class the derived class can't create an instance. Thus, the
@@ -46,6 +55,8 @@ public abstract class AbstractApplication implements CommonApplication {
 		this.startparameterManager = InjectorFactory.getInstance(StartparameterManager.class);
 		this.commonSystemSettings = InjectorFactory.getInstance(CommonSystemSettings.class);
 		this.commonStartparametersUtils = InjectorFactory.getInstance(CommonStartparametersUtils.class);
+		this.commonLog4JConfigurationUtils = InjectorFactory.getInstance(CommonLog4JConfigurationUtils.class);
+		this.commonFileUtilities = InjectorFactory.getInstance(CommonFileUtilities.class);
 	}
 
 	/**
@@ -69,14 +80,14 @@ public abstract class AbstractApplication implements CommonApplication {
 	 */
 	abstract AbstractApplication createApplicationObject();
 
-	public void main(String[] args) {
+	public void main(String[] args) throws IOException {
 
 		thiz = createApplicationObject();
 		internalMain(args);
 
 	}
 
-	protected void internalMain(String[] args) {
+	protected void internalMain(String[] args) throws IOException {
 
 		List<OptionParserBuilder> optionParserBuilders = prepareStartParameters();
 
@@ -100,6 +111,18 @@ public abstract class AbstractApplication implements CommonApplication {
 		}
 
 		setupLogging(baseDirOptionName, appDirOptionName, log4JOptionName);
+	}
+
+	/**
+	 * Derived classes may overwrite this method to have their own configuration template file delivered. These files
+	 * should contain the configurations made in log4J-template.xml file of this package (that is, the specific
+	 * template
+	 * should extend that file with additional lines).
+	 *
+	 * @return InputStream of the file.
+	 */
+	protected InputStream getLog4JConfigFileTemplate() {
+		return getClass().getResourceAsStream("log4J-template.xml");
 	}
 
 	private String computeParamDirName(List<OptionParserBuilder> optionParserBuilders) throws IllegalArgumentException {
@@ -162,7 +185,7 @@ public abstract class AbstractApplication implements CommonApplication {
 
 	/**
 	 * Ensures the presence of a Log4J parser builder. Will add a parser builder to the list given if jo log4J
-	 * builder is preset. In that case the file is assumed in the users home directory, named "log4J.xml".
+	 * builder is preset. In that case the file is assumed in the users home directory, named "log4J-template.xml".
 	 *
 	 * @param optionParserBuilders List of parser builders. Method may <b>MODIFIES</b> the list by adding a parser
 	 *                             builder.
@@ -197,66 +220,82 @@ public abstract class AbstractApplication implements CommonApplication {
 
 	}
 
+
 	/**
 	 * Sets up the logging from the values given in the start parameters.
 	 */
-	private void setupLogging(String baseDirOptionName, String appDirOptionName, String log4JOptionName) {
+	private void setupLogging(String baseDirOptionName, String appDirOptionName, String log4JOptionName)
+	throws IOException {
 
 		/*
 		 * Scan the parser builder list in internal main and ask the correct option names. Supply this method with
 		 * the correct option names, so it can ask for the values specified.
 		 */
 
-		// Get log4J file name
-		List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>> log4JOptionList =
-				startparameterManager.getOption(log4JOptionName);
-		if (log4JOptionList.size() != 1) {
-			throw new IllegalArgumentException("Log4J option missing or specified more than once.");
+		String fullConfigurationFileNameWithPath =
+				commonLog4JConfigurationUtils.getFullConfigurationFileNameWithPath( //
+				baseDirOptionName, //
+				appDirOptionName, //
+				log4JOptionName, //
+				o -> toStringOptionList(startparameterManager.getOption(o)));
+
+
+		// Check that the configuration file is present (create it, if not)
+		File out = new File(fullConfigurationFileNameWithPath);
+		if (!out.exists()) {
+			Map<String, String> replacementMap = new HashMap<>();
+			replacementMap.put( //
+					"##BASE_PATH##", //
+					commonLog4JConfigurationUtils.getLog4JBasePath( //
+							baseDirOptionName, //
+							appDirOptionName, //
+							o -> toStringOptionList(startparameterManager.getOption(o))) //
+							  );
+
+			commonFileUtilities.createFileContentsFromTemplate( //
+					getLog4JConfigFileTemplate(), //
+					replacementMap, //
+					new MyFileWriter(fullConfigurationFileNameWithPath) //
+															  );
 		}
 
-		Optional<? extends OptionValue<?>> optConfigFileName = log4JOptionList.get(0)
-				.getDefaultValue();
-		if (optConfigFileName.isEmpty()) {
-			throw new IllegalArgumentException("Log4J configuration file wasn't specified.");
-		}
-
-		OptionValue<String> fileNameOptionValue = getOptionValueAsStringOptionValue(optConfigFileName);
-		if (fileNameOptionValue.isEmpty()) {
-
-			System.err.println("WARN: Configuration file name for Log4J not given. Logging wil not be configured.");
-			return;
-		}
-
-		Optional<String> optLog4JFileName = fileNameOptionValue.getValue();
-		String log4JFileName = "";
-
-		/*
-		 * The value is always present (because this is already checked in the call of fileNameOptionValue). As the
-		 * code analysis does not know about that it would emit a warning about accessing an optional without
-		 * previous call to isPresent(). To prevent this warning the unnecessary check to optLog4JFileName.isPresent()
-		 * is done below.
-		 */
-		if (optLog4JFileName.isPresent()) {
-			log4JFileName = optLog4JFileName.get();
-		}
-
-		if (log4JFileName.isBlank()) {
-			System.err.println("WARN: Empty configuration file name given. Logging will not be configured.");
-		}
-
-		// FIXME Build full file name
-		String absoluteLog4JConfigurationFilenameWithPath = //
-				computeLog4JConfigurationFileLocation( //
-						baseDirOptionName, //
-						appDirOptionName, //
-						log4JFileName //;
-													 );
-
-		// FIXME Check that the configuration file is present (create it, if not)
-
-
-		// FIXME setup Log4J
+		System.setProperty("log4j2.configurationFile", fullConfigurationFileNameWithPath);
 	}
+
+	/**
+	 * Convert a list of OptionValue<?,?> to a list containing StringOptionValues.
+	 *
+	 * @param list A list of untyped OptionValues. Any of the element of this list MUST be a StringOptionValue, else
+	 *             an exception will be thrown.
+	 * @return The converted list
+	 * @throws IllegalArgumentException if any of the elements in the incoming list is not a StringOptionValue
+	 */
+	private List<StringOptionValue> toStringOptionList(List<StartOption<? extends OptionValue<?>, ?
+			extends OptionValue<?>>> list)
+	throws IllegalArgumentException {
+
+		List<StringOptionValue> returnList = new ArrayList<>();
+
+
+		for (StartOption<? extends OptionValue<?>, ? extends OptionValue<?>> startOption : list) {
+
+			Optional<? extends OptionValue<?>> defaultValue = startOption.getDefaultValue();
+			if (defaultValue.isEmpty()) {
+				returnList.add(new StringOptionValue());
+
+			} else {
+				if (!(defaultValue.get() instanceof StringOptionValue)) {
+					throw new IllegalArgumentException("Der Wert in der Liste ist kein StringOptionValue.");
+				}
+
+				returnList.add((StringOptionValue) defaultValue.get());
+			}
+		}
+
+		return returnList;
+
+	}
+
 
 	private String computeLog4JConfigurationFileLocation(String baseDirOptionName, String appDirOptionName,
 														 String log4JFileNameOptionName) {
@@ -266,6 +305,7 @@ public abstract class AbstractApplication implements CommonApplication {
 				.toString();
 		final String defaultAppDir = "";
 		final String defaultConfigFile = "log4J.properties";
+
 
 		StringBuilder sbAbsolutePath = new StringBuilder();
 		if (baseDirOptionName != null && !baseDirOptionName.isBlank()) {
@@ -338,6 +378,32 @@ public abstract class AbstractApplication implements CommonApplication {
 	 * @return The list of OptionParserBuilders. It may be empty but must not be NULL.
 	 */
 	protected abstract List<OptionParserBuilder> prepareStartParameters();
+
+	private class MyFileWriter implements CommonFileUtilities.Persistor {
+
+		private final FileWriter fileWriter;
+
+		MyFileWriter(String fullFileName) throws IOException {
+			fileWriter = new FileWriter(fullFileName);
+		}
+
+		@Override
+		public void write(String line) throws IOException {
+			fileWriter.write(line);
+		}
+
+		@Override
+		public void flush() throws IOException {
+			fileWriter.flush();
+		}
+
+		@Override
+		public void close() throws IOException {
+			fileWriter.close();
+		}
+
+
+	}
 
 
 }
