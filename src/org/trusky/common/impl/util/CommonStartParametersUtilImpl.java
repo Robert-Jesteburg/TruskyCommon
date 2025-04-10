@@ -10,9 +10,12 @@
 
 package org.trusky.common.impl.util;
 
+import org.trusky.common.api.startparameters.StartOption;
+import org.trusky.common.api.startparameters.optionvalue.OptionValue;
 import org.trusky.common.api.startparameters.optionvalue.StringOptionValue;
 import org.trusky.common.api.util.CommonStartparametersUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -54,6 +57,37 @@ public class CommonStartParametersUtilImpl implements CommonStartparametersUtils
 		} else {
 			return defaultValue;
 		}
+
+	}
+
+	@Override
+	public List<StringOptionValue> toStringOption(List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>> list)
+	throws IllegalArgumentException {
+
+
+		if (list == null) {
+			throw new IllegalArgumentException("The list must not be empty.");
+		}
+
+		List<StringOptionValue> returnList = new ArrayList<>();
+
+
+		for (StartOption<? extends OptionValue<?>, ? extends OptionValue<?>> startOption : list) {
+
+			Optional<? extends OptionValue<?>> defaultValue = startOption.getDefaultValue();
+			if (defaultValue.isEmpty()) {
+				returnList.add(new StringOptionValue());
+
+			} else {
+				if (!(defaultValue.get() instanceof StringOptionValue)) {
+					throw new IllegalArgumentException("The element in the list is not of type StringOptionValue.");
+				}
+
+				returnList.add((StringOptionValue) defaultValue.get());
+			}
+		}
+
+		return returnList;
 
 	}
 

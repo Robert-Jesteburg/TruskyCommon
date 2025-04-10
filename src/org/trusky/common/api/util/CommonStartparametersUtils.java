@@ -10,6 +10,8 @@
 
 package org.trusky.common.api.util;
 
+import org.trusky.common.api.startparameters.StartOption;
+import org.trusky.common.api.startparameters.optionvalue.OptionValue;
 import org.trusky.common.api.startparameters.optionvalue.StringOptionValue;
 
 import java.util.List;
@@ -35,4 +37,16 @@ public interface CommonStartparametersUtils {
 											  Function<String, List<StringOptionValue>> parameterSupplier,
 											  String defaultValue)
 	throws IllegalArgumentException;
+
+	/**
+	 * Converts the list to a list of StringOptionValues. If the list contains any other StartOption type than
+	 * StringOptionValue an IllegalArgumentException will be thrown.
+	 *
+	 * @param list Must not be null, and must not contain any element that isn't a StringOptionType.
+	 * @return A list of StringOptionTyoe elements
+	 * @throws IllegalArgumentException see above.
+	 */
+	List<StringOptionValue> toStringOption( //
+											List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>> list //
+										  ) throws IllegalArgumentException;
 }

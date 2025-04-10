@@ -10,6 +10,9 @@
 
 package org.trusky.common.impl.startparameters.util;
 
+import org.trusky.common.api.injection.InjectorFactory;
+import org.trusky.common.api.startparameters.StartOption;
+import org.trusky.common.api.startparameters.optionvalue.OptionValue;
 import org.trusky.common.api.startparameters.optionvalue.StringOptionValue;
 import org.trusky.common.api.util.CommonStartparametersUtils;
 
@@ -76,6 +79,15 @@ public class CommonStartparameterUtilsFake implements CommonStartparametersUtils
 		}
 
 		return returnValue;
+	}
+
+	@Override
+	public List<StringOptionValue> toStringOption(List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>> list)
+	throws IllegalArgumentException {
+
+		// Use the real implementation
+		CommonStartparametersUtils startparameterUtils = InjectorFactory.getInstance(CommonStartparametersUtils.class);
+		return startparameterUtils.toStringOption(list);
 	}
 
 

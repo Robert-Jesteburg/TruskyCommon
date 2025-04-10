@@ -41,9 +41,6 @@ public class CommonLog4JConfigFileCreatorOrchestratorImpl implements CommonLog4J
 		this.fileUtilities = fileUtilities;
 	}
 
-	// FIXME Test schreiben
-
-
 	@Override
 	public String getLogPath(String baseDirOptionName, String appDirOptionName, Function<String,
 			List<StringOptionValue>> parameterSupplier) {
@@ -62,7 +59,6 @@ public class CommonLog4JConfigFileCreatorOrchestratorImpl implements CommonLog4J
 		return sbLog4JLogDir.toString();
 	}
 
-	// FIXME modularisieren, damit besser getestet werden kann
 	@Override
 	public void createFile( //
 							String baseDirOptionName, //

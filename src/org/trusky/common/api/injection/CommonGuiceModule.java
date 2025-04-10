@@ -15,6 +15,7 @@ import org.trusky.common.api.startparameters.builder.module.CommonParserBuilderM
 import org.trusky.common.api.startparameters.module.CommonStartparametersModule;
 import org.trusky.common.api.util.CommonUtilModule;
 import org.trusky.common.impl.application.CommonApplicationModule;
+import org.trusky.common.impl.logging.CommonLog4JModule;
 
 /**
  * Specify this to build the injector with all the dependencies for the common library. You can specify additional
@@ -30,6 +31,7 @@ public class CommonGuiceModule extends AbstractModule {
 		install(new CommonParserBuilderModule());
 		install(new CommonUtilModule());
 		install(new CommonApplicationModule());
+		install(new CommonLog4JModule());
 
 
 		//bind(CommandLine.class).to(CommandLineImpl.class);

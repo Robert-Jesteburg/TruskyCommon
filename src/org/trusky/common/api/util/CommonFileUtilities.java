@@ -18,8 +18,6 @@ public interface CommonFileUtilities {
 
 	void createNonExistingFile(String fullFileNameWithPath) throws IOException;
 
-	// FIXME Test(s) schreiben
-
 	/**
 	 * @param templateFileContent The template as input stream. There may be placeholders, that have
 	 *                            to be replaced

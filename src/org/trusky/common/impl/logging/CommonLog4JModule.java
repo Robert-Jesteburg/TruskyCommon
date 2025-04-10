@@ -8,21 +8,18 @@
  * c) Irreführung durch Angabe bewusst falscher Daten
  */
 
-package org.trusky.common.api.util;
+package org.trusky.common.impl.logging;
 
 import com.google.inject.AbstractModule;
-import org.trusky.common.impl.util.*;
+import org.trusky.common.api.logging.CommonLoggerFactory;
 
-public class CommonUtilModule extends AbstractModule {
+public class CommonLog4JModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
 		super.configure();
 
-		bind(StringUtilities.class).to(StringUtilitiesImpl.class);
-		bind(CommonSystemSettings.class).to(CommonSystemSettingsImpl.class);
-		bind(CommonStartparametersUtils.class).to(CommonStartParametersUtilImpl.class);
-		bind(CommonLog4JConfigurationUtils.class).to(CommonLog4JConfigurationUtilsImpl.class);
-		bind(CommonFileUtilities.class).to(CommonFileUtilitiesImpl.class);
+		bind(CommonLoggerFactory.class).to(CommonLoggerFactoryImpl.class);
+		bind(CommonFormatStringRewriter.class).to(CommonFormatStringRewriterImpl.class);
 	}
 }

@@ -57,7 +57,6 @@ public class CommonLog4JConfigurationUtilsImpl implements CommonLog4JConfigurati
 
 			if (baseDir.endsWith(commonSystemSettings.getPathSeparator())) {
 
-				// FIXME das hier mit einem Testfall abdecken!
 				baseDir = stripTrailingString(baseDir, commonSystemSettings.getPathSeparator());
 
 				if (baseDir.isEmpty()) { // If root dir was specified, use it
@@ -111,7 +110,7 @@ public class CommonLog4JConfigurationUtilsImpl implements CommonLog4JConfigurati
 	public String getLog4JConfigurationFileName(String log4JFileNameOptionName, Function<String,
 			List<StringOptionValue>> parameterSupplier) {
 
-		final String log4JDefaultFileName = "log4J-template.xml";
+		final String log4JDefaultFileName = "log4J-configuration.xml";
 
 		String fileName;
 
@@ -131,7 +130,8 @@ public class CommonLog4JConfigurationUtilsImpl implements CommonLog4JConfigurati
 													   String log4JFileNameOptionName, Function<String,
 					List<StringOptionValue>> parameterSupplier) {
 
-		StringBuilder sb = new StringBuilder(getLog4JBasePath(baseDirOptionName, appDirOptionName, parameterSupplier));
+		StringBuilder sb;
+		sb = new StringBuilder(getLog4JBasePath(baseDirOptionName, appDirOptionName, parameterSupplier));
 		sb //
 				.append(commonSystemSettings.getPathSeparator())
 				.append(getLog4JConfigurationFileName(log4JFileNameOptionName, parameterSupplier));

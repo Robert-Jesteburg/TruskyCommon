@@ -12,6 +12,8 @@ package org.trusky.common.api.application;
 
 import com.google.inject.AbstractModule;
 import org.trusky.common.api.injection.InjectorFactory;
+import org.trusky.common.api.logging.CommonLogger;
+import org.trusky.common.api.logging.CommonLoggerFactory;
 import org.trusky.common.api.startparameters.StartOption;
 import org.trusky.common.api.startparameters.builder.BaseDirOptionParserBuilder;
 import org.trusky.common.api.startparameters.builder.Log4JOptionParserBuilder;
@@ -23,29 +25,34 @@ import org.trusky.common.api.startparameters.optionvalue.StringOptionValue;
 import org.trusky.common.api.util.CommonFileUtilities;
 import org.trusky.common.api.util.CommonLog4JConfigurationUtils;
 import org.trusky.common.api.util.CommonStartparametersUtils;
-import org.trusky.common.api.util.CommonSystemSettings;
 import org.trusky.common.impl.application.StartparameterManager;
+import org.trusky.common.impl.logging.CommonLoggerImpl;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public abstract class AbstractApplication implements CommonApplication {
 
 	private final StartparameterManager startparameterManager;
-	private final CommonSystemSettings commonSystemSettings;
 	private final CommonStartparametersUtils commonStartparametersUtils;
 	private final CommonLog4JConfigurationUtils commonLog4JConfigurationUtils;
 	private final CommonFileUtilities commonFileUtilities;
+
+	private final CommonLogger logger;
+
 	/**
 	 * Pointer to the one and only instance.
 	 */
 	private AbstractApplication thiz;
 
-	protected AbstractApplication(CommonFileUtilities commonFileUtilities) {
+	protected AbstractApplication() {
 
 
 		/*
@@ -53,11 +60,23 @@ public abstract class AbstractApplication implements CommonApplication {
 		 * instance is created manually (without the use of @Inject).
 		 */
 		this.startparameterManager = InjectorFactory.getInstance(StartparameterManager.class);
-		this.commonSystemSettings = InjectorFactory.getInstance(CommonSystemSettings.class);
 		this.commonStartparametersUtils = InjectorFactory.getInstance(CommonStartparametersUtils.class);
 		this.commonLog4JConfigurationUtils = InjectorFactory.getInstance(CommonLog4JConfigurationUtils.class);
 		this.commonFileUtilities = InjectorFactory.getInstance(CommonFileUtilities.class);
+
+		CommonLoggerFactory loggerFactory = InjectorFactory.getInstance(CommonLoggerFactory.class);
+		this.logger = loggerFactory.getLogger(this.getClass());
+
+		this.thiz = this;
 	}
+
+	public static void main(String[] args) throws IOException {
+
+		AbstractApplication thiz = createApplicationObject();
+		thiz.internalMain(args);
+
+	}
+
 
 	/**
 	 * This client method ist responsible for creating the application object.
@@ -80,23 +99,16 @@ public abstract class AbstractApplication implements CommonApplication {
 	 */
 	abstract AbstractApplication createApplicationObject();
 
-	public void main(String[] args) throws IOException {
-
-		thiz = createApplicationObject();
-		internalMain(args);
-
-	}
-
 	protected void internalMain(String[] args) throws IOException {
 
 		List<OptionParserBuilder> optionParserBuilders = prepareStartParameters();
 
-		// FIXME If no Log4J logging parser builder is present, create and add one.
 		/*
 		 * This includes setting the base dir as well as the config dir and supplying the logging configuration.
 		 * Probably by using a predefines logger xml in this jar???
 		 */
 		prepareLoggingConfigurationIfNotPresent(optionParserBuilders);
+
 		String log4JOptionName = computeLog4JOptionName(optionParserBuilders);
 		String baseDirOptionName = computeBaseDirOptionName(optionParserBuilders);
 		String appDirOptionName = computeParamDirName(optionParserBuilders);
@@ -174,7 +186,7 @@ public abstract class AbstractApplication implements CommonApplication {
 				.toList();
 
 		if (log4JBuilders.size() != 1) {
-			final String errString = "Please supply only one parser builder per type (here: Log4J).";
+			final String errString = "Please supply exactly one parser builder per type (here: Log4J).";
 			throw new IllegalArgumentException(errString);
 		}
 
@@ -260,6 +272,8 @@ public abstract class AbstractApplication implements CommonApplication {
 		}
 
 		System.setProperty("log4j2.configurationFile", fullConfigurationFileNameWithPath);
+		logger.debug("Logging configuration file is {}.", fullConfigurationFileNameWithPath);
+		CommonLoggerImpl.setIsLoggingPrepared(true);
 	}
 
 	/**
@@ -274,25 +288,7 @@ public abstract class AbstractApplication implements CommonApplication {
 			extends OptionValue<?>>> list)
 	throws IllegalArgumentException {
 
-		List<StringOptionValue> returnList = new ArrayList<>();
-
-
-		for (StartOption<? extends OptionValue<?>, ? extends OptionValue<?>> startOption : list) {
-
-			Optional<? extends OptionValue<?>> defaultValue = startOption.getDefaultValue();
-			if (defaultValue.isEmpty()) {
-				returnList.add(new StringOptionValue());
-
-			} else {
-				if (!(defaultValue.get() instanceof StringOptionValue)) {
-					throw new IllegalArgumentException("Der Wert in der Liste ist kein StringOptionValue.");
-				}
-
-				returnList.add((StringOptionValue) defaultValue.get());
-			}
-		}
-
-		return returnList;
+		return commonStartparametersUtils.toStringOption(list);
 
 	}
 
@@ -300,71 +296,11 @@ public abstract class AbstractApplication implements CommonApplication {
 	private String computeLog4JConfigurationFileLocation(String baseDirOptionName, String appDirOptionName,
 														 String log4JFileNameOptionName) {
 
-		final String defaultBaseDir = Path.of(commonSystemSettings.getHomeDir())
-				.toAbsolutePath()
-				.toString();
-		final String defaultAppDir = "";
-		final String defaultConfigFile = "log4J.properties";
-
-
-		StringBuilder sbAbsolutePath = new StringBuilder();
-		if (baseDirOptionName != null && !baseDirOptionName.isBlank()) {
-
-			List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>> baseDirSettings =
-					startparameterManager.getOption(baseDirOptionName);
-
-			if (!baseDirSettings.isEmpty()) {
-
-				if (baseDirSettings.size() > 1) {
-					throw new IllegalArgumentException("More than one base directory given.");
-				}
-
-				Optional<String> optBaseDir = getOptionValueAsStringOptionValue(baseDirSettings.get(0)
-						.getDefaultValue()).getValue();
-
-				if (optBaseDir.isPresent()) {
-
-					String base = optBaseDir.get();
-					sbAbsolutePath.append(base);
-					if (!base.endsWith(commonSystemSettings.getPathSeparator())) {
-						sbAbsolutePath.append(commonSystemSettings.getPathSeparator());
-					}
-
-				} else {
-					sbAbsolutePath.append(defaultBaseDir);
-					if (!defaultBaseDir.endsWith(commonSystemSettings.getPathSeparator())) {
-						sbAbsolutePath.append(commonSystemSettings.getPathSeparator());
-					}
-				}
-
-			} else {
-
-				sbAbsolutePath.append(defaultBaseDir);
-				if (!defaultBaseDir.endsWith(commonSystemSettings.getPathSeparator())) {
-					sbAbsolutePath.append(commonSystemSettings.getPathSeparator());
-				}
-
-			}
-
-		} else {
-			String basePath = Path.of("./")
-					.toString();
-			sbAbsolutePath.append(basePath);
-
-			if (!basePath.endsWith(commonSystemSettings.getPathSeparator())) {
-				sbAbsolutePath.append(commonSystemSettings.getPathSeparator());
-			}
-
-		}
-
-		if (appDirOptionName != null && !appDirOptionName.isBlank()) {
-
-			List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>> paramDirSettings =
-					startparameterManager.getOption(appDirOptionName);
-
-		}
-
-		return ""; // FIXME korrekt implememntieren
+		return commonLog4JConfigurationUtils.getFullConfigurationFileNameWithPath( //
+				baseDirOptionName, //
+				appDirOptionName, //
+				log4JFileNameOptionName, //
+				o -> toStringOptionList(startparameterManager.getOption(o)));
 	}
 
 	@SuppressWarnings("unchecked")
