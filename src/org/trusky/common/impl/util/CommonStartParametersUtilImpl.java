@@ -47,12 +47,7 @@ public class CommonStartParametersUtilImpl implements CommonStartparametersUtils
 
 			StringOptionValue optionValue = settings.get(0);
 			Optional<String> optValue = optionValue.getValue();
-			if (optValue.isPresent()) {
-				return optValue.get();
-			} else {
-				return defaultValue;
-			}
-
+			return optValue.orElse(defaultValue);
 
 		} else {
 			return defaultValue;
@@ -61,7 +56,8 @@ public class CommonStartParametersUtilImpl implements CommonStartparametersUtils
 	}
 
 	@Override
-	public List<StringOptionValue> toStringOption(List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>> list)
+	public List<StringOptionValue> toStringOptionList(List<StartOption<? extends OptionValue<?>, ?
+			extends OptionValue<?>>> list)
 	throws IllegalArgumentException {
 
 

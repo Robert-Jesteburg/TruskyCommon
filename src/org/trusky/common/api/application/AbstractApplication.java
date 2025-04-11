@@ -10,18 +10,14 @@
 
 package org.trusky.common.api.application;
 
-import com.google.inject.AbstractModule;
 import org.trusky.common.api.injection.InjectorFactory;
 import org.trusky.common.api.logging.CommonLogger;
 import org.trusky.common.api.logging.CommonLoggerFactory;
-import org.trusky.common.api.startparameters.StartOption;
 import org.trusky.common.api.startparameters.builder.BaseDirOptionParserBuilder;
 import org.trusky.common.api.startparameters.builder.Log4JOptionParserBuilder;
 import org.trusky.common.api.startparameters.builder.OptionParserBuilder;
 import org.trusky.common.api.startparameters.builder.ParamDirNameOptionParserBuilder;
 import org.trusky.common.api.startparameters.exceptions.StartParameterException;
-import org.trusky.common.api.startparameters.optionvalue.OptionValue;
-import org.trusky.common.api.startparameters.optionvalue.StringOptionValue;
 import org.trusky.common.api.util.CommonFileUtilities;
 import org.trusky.common.api.util.CommonLog4JConfigurationUtils;
 import org.trusky.common.api.util.CommonStartparametersUtils;
@@ -36,21 +32,18 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public abstract class AbstractApplication implements CommonApplication {
-
-	private final StartparameterManager startparameterManager;
-	private final CommonStartparametersUtils commonStartparametersUtils;
-	private final CommonLog4JConfigurationUtils commonLog4JConfigurationUtils;
-	private final CommonFileUtilities commonFileUtilities;
-
-	private final CommonLogger logger;
 
 	/**
 	 * Pointer to the one and only instance.
 	 */
-	private AbstractApplication thiz;
+	private static AbstractApplication thiz;
+	private final StartparameterManager startparameterManager;
+	private final CommonStartparametersUtils commonStartparametersUtils;
+	private final CommonLog4JConfigurationUtils commonLog4JConfigurationUtils;
+	private final CommonFileUtilities commonFileUtilities;
+	private final CommonLogger logger;
 
 	protected AbstractApplication() {
 
@@ -67,41 +60,13 @@ public abstract class AbstractApplication implements CommonApplication {
 		CommonLoggerFactory loggerFactory = InjectorFactory.getInstance(CommonLoggerFactory.class);
 		this.logger = loggerFactory.getLogger(this.getClass());
 
-		this.thiz = this;
-	}
-
-	public static void main(String[] args) throws IOException {
-
-		AbstractApplication thiz = createApplicationObject();
-		thiz.internalMain(args);
-
+		thiz = this;
 	}
 
 
-	/**
-	 * This client method ist responsible for creating the application object.
-	 * <p>
-	 * As the abstract application object uses injection the first thing to do for the concrete class is to configure
-	 * the injection framework by
-	 * calling {@link org.trusky.common.api.injection.InjectorFactory#setModule(AbstractModule)}. The module can be
-	 * constructed the same way as {@link org.trusky.common.api.injection.CommonGuiceModule}; the first thing to do
-	 * after the call to super should be <code>install(new CommonGuiceModule());</code>. After that further modules
-	 * and/or bind commands can be emitted.<br/>
-	 * If the application itself does not use injection the injector can be initialized by simply call
-	 * <code>InjectorFactory.setModule(new CommonGuiceModule);</code>
-	 * </p>
-	 *
-	 * <p>
-	 * After setting up injection simply create an instance of your class.
-	 * </p>
-	 *
-	 * @return the instance of the Application object
-	 */
-	abstract AbstractApplication createApplicationObject();
+	protected void prepareStartparametersAndLogging(String[] args, List<OptionParserBuilder> optionParserBuilders)
+	throws IOException {
 
-	protected void internalMain(String[] args) throws IOException {
-
-		List<OptionParserBuilder> optionParserBuilders = prepareStartParameters();
 
 		/*
 		 * This includes setting the base dir as well as the config dir and supplying the logging configuration.
@@ -212,6 +177,7 @@ public abstract class AbstractApplication implements CommonApplication {
 
 		if (log4JBuilders.size() == 1) {
 			return;
+			
 		} else if (log4JBuilders.size() > 1) {
 
 			final String errString = "Please supply only one parser builder per type (here: Log4J).";
@@ -223,7 +189,8 @@ public abstract class AbstractApplication implements CommonApplication {
 			Log4JOptionParserBuilder log4JOptionParserBuilder =
 					InjectorFactory.getInstance(Log4JOptionParserBuilder.class);
 
-			Path path = Path.of("~/log4J.xml");
+			String expectedLocation = "~/" + Log4JOptionParserBuilder.DEFAULT_LOG4J_CONFIGURATION_NAME;
+			Path path = Path.of(expectedLocation);
 			log4JOptionParserBuilder.setDefaultParameterValue(path.toAbsolutePath()
 					.toString());
 
@@ -249,7 +216,7 @@ public abstract class AbstractApplication implements CommonApplication {
 				baseDirOptionName, //
 				appDirOptionName, //
 				log4JOptionName, //
-				o -> toStringOptionList(startparameterManager.getOption(o)));
+				o -> commonStartparametersUtils.toStringOptionList(startparameterManager.getOption(o)));
 
 
 		// Check that the configuration file is present (create it, if not)
@@ -261,7 +228,7 @@ public abstract class AbstractApplication implements CommonApplication {
 					commonLog4JConfigurationUtils.getLog4JBasePath( //
 							baseDirOptionName, //
 							appDirOptionName, //
-							o -> toStringOptionList(startparameterManager.getOption(o))) //
+							o -> commonStartparametersUtils.toStringOptionList(startparameterManager.getOption(o))) //
 							  );
 
 			commonFileUtilities.createFileContentsFromTemplate( //
@@ -276,46 +243,7 @@ public abstract class AbstractApplication implements CommonApplication {
 		CommonLoggerImpl.setIsLoggingPrepared(true);
 	}
 
-	/**
-	 * Convert a list of OptionValue<?,?> to a list containing StringOptionValues.
-	 *
-	 * @param list A list of untyped OptionValues. Any of the element of this list MUST be a StringOptionValue, else
-	 *             an exception will be thrown.
-	 * @return The converted list
-	 * @throws IllegalArgumentException if any of the elements in the incoming list is not a StringOptionValue
-	 */
-	private List<StringOptionValue> toStringOptionList(List<StartOption<? extends OptionValue<?>, ?
-			extends OptionValue<?>>> list)
-	throws IllegalArgumentException {
-
-		return commonStartparametersUtils.toStringOption(list);
-
-	}
-
-
-	private String computeLog4JConfigurationFileLocation(String baseDirOptionName, String appDirOptionName,
-														 String log4JFileNameOptionName) {
-
-		return commonLog4JConfigurationUtils.getFullConfigurationFileNameWithPath( //
-				baseDirOptionName, //
-				appDirOptionName, //
-				log4JFileNameOptionName, //
-				o -> toStringOptionList(startparameterManager.getOption(o)));
-	}
-
-	@SuppressWarnings("unchecked")
-	private OptionValue<String> getOptionValueAsStringOptionValue(Optional<? extends OptionValue<?>> optValue) {
-		return (OptionValue<String>) optValue.get();
-	}
-
-	/**
-	 * Configure expected parameters by supplying a list of parser builders.
-	 *
-	 * @return The list of OptionParserBuilders. It may be empty but must not be NULL.
-	 */
-	protected abstract List<OptionParserBuilder> prepareStartParameters();
-
-	private class MyFileWriter implements CommonFileUtilities.Persistor {
+	private static class MyFileWriter implements CommonFileUtilities.Persistor {
 
 		private final FileWriter fileWriter;
 

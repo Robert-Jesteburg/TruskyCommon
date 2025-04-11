@@ -27,10 +27,10 @@ import java.util.function.Function;
  */
 public class CommonStartparameterUtilsFake implements CommonStartparametersUtils {
 
+	private final Map<String, String> returnMap = new HashMap<>();
+	private final Map<String, String> exceptionMap = new HashMap<>();
 	private Optional<String> generalReturnValue = Optional.empty();
 	private boolean alwaysReturnNull = false;
-	private Map<String, String> returnMap = new HashMap<>();
-	private Map<String, String> exceptionMap = new HashMap<>();
 
 	public void reset() {
 		returnMap.clear();
@@ -82,12 +82,13 @@ public class CommonStartparameterUtilsFake implements CommonStartparametersUtils
 	}
 
 	@Override
-	public List<StringOptionValue> toStringOption(List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>> list)
+	public List<StringOptionValue> toStringOptionList(List<StartOption<? extends OptionValue<?>, ?
+			extends OptionValue<?>>> list)
 	throws IllegalArgumentException {
 
 		// Use the real implementation
 		CommonStartparametersUtils startparameterUtils = InjectorFactory.getInstance(CommonStartparametersUtils.class);
-		return startparameterUtils.toStringOption(list);
+		return startparameterUtils.toStringOptionList(list);
 	}
 
 

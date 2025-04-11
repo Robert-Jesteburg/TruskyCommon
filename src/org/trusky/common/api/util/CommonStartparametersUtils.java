@@ -46,7 +46,7 @@ public interface CommonStartparametersUtils {
 	 * @return A list of StringOptionTyoe elements
 	 * @throws IllegalArgumentException see above.
 	 */
-	List<StringOptionValue> toStringOption( //
-											List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>> list //
-										  ) throws IllegalArgumentException;
+	List<StringOptionValue> toStringOptionList( //
+												List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>> list //
+											  ) throws IllegalArgumentException;
 }

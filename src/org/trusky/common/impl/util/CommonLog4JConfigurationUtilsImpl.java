@@ -10,6 +10,7 @@
 
 package org.trusky.common.impl.util;
 
+import org.trusky.common.api.startparameters.builder.Log4JOptionParserBuilder;
 import org.trusky.common.api.startparameters.optionvalue.StringOptionValue;
 import org.trusky.common.api.util.CommonLog4JConfigurationUtils;
 import org.trusky.common.api.util.CommonStartparametersUtils;
@@ -110,7 +111,7 @@ public class CommonLog4JConfigurationUtilsImpl implements CommonLog4JConfigurati
 	public String getLog4JConfigurationFileName(String log4JFileNameOptionName, Function<String,
 			List<StringOptionValue>> parameterSupplier) {
 
-		final String log4JDefaultFileName = "log4J-configuration.xml";
+		final String log4JDefaultFileName = Log4JOptionParserBuilder.DEFAULT_LOG4J_CONFIGURATION_NAME;
 
 		String fileName;
 
