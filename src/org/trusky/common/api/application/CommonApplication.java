@@ -10,7 +10,10 @@
 
 package org.trusky.common.api.application;
 
+import java.io.IOException;
+
 public interface CommonApplication {
 
 	void prepareInjector();
+	void run(String[] args) throws IOException;
 }

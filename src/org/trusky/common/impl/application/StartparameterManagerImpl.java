@@ -14,9 +14,9 @@ import org.trusky.common.api.startparameters.CommandLineProcessor;
 import org.trusky.common.api.startparameters.EditableStartparameterParserContainer;
 import org.trusky.common.api.startparameters.StartOption;
 import org.trusky.common.api.startparameters.StartParameterContainer;
-import org.trusky.common.api.startparameters.builder.OptionParserBuilder;
 import org.trusky.common.api.startparameters.exceptions.StartParameterException;
 import org.trusky.common.api.startparameters.optionvalue.OptionValue;
+import org.trusky.common.api.startparameters.parser.StartOptionParser;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -40,7 +40,7 @@ public class StartparameterManagerImpl implements StartparameterManager {
 	}
 
 	@Override
-	public void prepareParameters(List<OptionParserBuilder> parameterBuilderList) {
+	public void prepareParameters(List<StartOptionParser> parameterBuilderList) {
 
 		if (parameterBuilderList == null) {
 			throw new IllegalArgumentException("Builder list must not be empty.");
@@ -50,9 +50,7 @@ public class StartparameterManagerImpl implements StartparameterManager {
 			throw new IllegalStateException("prepareParameters must not be called twice.");
 		}
 
-		parameterBuilderList.stream()
-				.map(OptionParserBuilder::build)
-				.forEach(parserContainer::addParser);
+		parameterBuilderList.forEach(parserContainer::addParser);
 
 		parsersHaveBeenSet = true;
 

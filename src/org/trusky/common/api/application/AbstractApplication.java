@@ -13,11 +13,12 @@ package org.trusky.common.api.application;
 import org.trusky.common.api.injection.InjectorFactory;
 import org.trusky.common.api.logging.CommonLogger;
 import org.trusky.common.api.logging.CommonLoggerFactory;
-import org.trusky.common.api.startparameters.builder.BaseDirOptionParserBuilder;
 import org.trusky.common.api.startparameters.builder.Log4JOptionParserBuilder;
-import org.trusky.common.api.startparameters.builder.OptionParserBuilder;
-import org.trusky.common.api.startparameters.builder.ParamDirNameOptionParserBuilder;
 import org.trusky.common.api.startparameters.exceptions.StartParameterException;
+import org.trusky.common.api.startparameters.parser.BaseDirOptionParser;
+import org.trusky.common.api.startparameters.parser.Log4JOptionParser;
+import org.trusky.common.api.startparameters.parser.ParamDirNameOptionParser;
+import org.trusky.common.api.startparameters.parser.StartOptionParser;
 import org.trusky.common.api.util.CommonFileUtilities;
 import org.trusky.common.api.util.CommonLog4JConfigurationUtils;
 import org.trusky.common.api.util.CommonStartparametersUtils;
@@ -64,7 +65,7 @@ public abstract class AbstractApplication implements CommonApplication {
 	}
 
 
-	protected void prepareStartparametersAndLogging(String[] args, List<OptionParserBuilder> optionParserBuilders)
+	protected void prepareStartparametersAndLogging(String[] args, List<StartOptionParser> optionParserBuilders)
 	throws IOException {
 
 
@@ -102,10 +103,10 @@ public abstract class AbstractApplication implements CommonApplication {
 		return getClass().getResourceAsStream("log4J-template.xml");
 	}
 
-	private String computeParamDirName(List<OptionParserBuilder> optionParserBuilders) throws IllegalArgumentException {
+	private String computeParamDirName(List<StartOptionParser> optionParserBuilders) throws IllegalArgumentException {
 
-		List<OptionParserBuilder> paramDirBuilderList = optionParserBuilders.stream()
-				.filter(builder -> (builder instanceof ParamDirNameOptionParserBuilder))
+		List<StartOptionParser> paramDirBuilderList = optionParserBuilders.stream()
+				.filter(builder -> (builder instanceof ParamDirNameOptionParser))
 				.toList();
 
 		if (paramDirBuilderList.isEmpty()) {
@@ -122,11 +123,11 @@ public abstract class AbstractApplication implements CommonApplication {
 				.getOptionName();
 	}
 
-	private String computeBaseDirOptionName(List<OptionParserBuilder> optionParserBuilders)
+	private String computeBaseDirOptionName(List<StartOptionParser> optionParserBuilders)
 	throws IllegalArgumentException {
 
-		List<OptionParserBuilder> baseDirBuilders = optionParserBuilders.stream()
-				.filter(builder -> (builder instanceof BaseDirOptionParserBuilder))
+		List<StartOptionParser> baseDirBuilders = optionParserBuilders.stream()
+				.filter(builder -> (builder instanceof BaseDirOptionParser))
 				.toList();
 
 		if (baseDirBuilders.isEmpty()) {
@@ -143,11 +144,11 @@ public abstract class AbstractApplication implements CommonApplication {
 				.getOptionName();
 	}
 
-	private String computeLog4JOptionName(List<OptionParserBuilder> optionParserBuilders)
+	private String computeLog4JOptionName(List<StartOptionParser> optionParserBuilders)
 	throws IllegalArgumentException {
 
-		List<OptionParserBuilder> log4JBuilders = optionParserBuilders.stream()
-				.filter(builder -> (builder instanceof Log4JOptionParserBuilder))
+		List<StartOptionParser> log4JBuilders = optionParserBuilders.stream()
+				.filter(builder -> (builder instanceof Log4JOptionParser))
 				.toList();
 
 		if (log4JBuilders.size() != 1) {
@@ -168,23 +169,20 @@ public abstract class AbstractApplication implements CommonApplication {
 	 *                             builder.
 	 * @throws IllegalArgumentException if there are two or more builders for log4J.
 	 */
-	private void prepareLoggingConfigurationIfNotPresent(List<OptionParserBuilder> optionParserBuilders)
+	private void prepareLoggingConfigurationIfNotPresent(List<StartOptionParser> optionParserBuilders)
 	throws IllegalArgumentException {
 
-		List<OptionParserBuilder> log4JBuilders = optionParserBuilders.stream()
-				.filter(builder -> (builder instanceof Log4JOptionParserBuilder))
+		List<StartOptionParser> log4JBuilders = optionParserBuilders.stream()
+				.filter(builder -> (builder instanceof Log4JOptionParser))
 				.toList();
 
-		if (log4JBuilders.size() == 1) {
-			return;
-			
-		} else if (log4JBuilders.size() > 1) {
+		if (log4JBuilders.size() > 1) {
 
 			final String errString = "Please supply only one parser builder per type (here: Log4J).";
 			System.err.println(errString);
 			throw new IllegalArgumentException(errString);
 
-		} else {
+		} else if(log4JBuilders.isEmpty()) {
 
 			Log4JOptionParserBuilder log4JOptionParserBuilder =
 					InjectorFactory.getInstance(Log4JOptionParserBuilder.class);
@@ -194,7 +192,7 @@ public abstract class AbstractApplication implements CommonApplication {
 			log4JOptionParserBuilder.setDefaultParameterValue(path.toAbsolutePath()
 					.toString());
 
-			optionParserBuilders.add(log4JOptionParserBuilder);
+			optionParserBuilders.add(log4JOptionParserBuilder.build());
 		}
 
 	}

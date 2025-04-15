@@ -4,7 +4,13 @@ import org.trusky.common.api.startparameters.CommandLine;
 import org.trusky.common.api.startparameters.EditableStartParameterContainer;
 import org.trusky.common.api.startparameters.exceptions.StartParameterException;
 
+import java.util.Optional;
+
 public interface StartOptionParser {
+
+	String getOptionName();
+
+	Optional getDefaultParamValue();
 
 	/**
 	 * @param cmdLine This method must not call next() against cmdLine
@@ -22,14 +28,9 @@ public interface StartOptionParser {
 	public void parse(CommandLine cmdLine, EditableStartParameterContainer parameterContainer)
 	throws StartParameterException;
 
-	/**
-	 * If no values were given on the command line there may be a reasonable default. This method returns TRUE if
-	 * such a default exists; in that case {@link #applyDefaultParameterIfNecessary(EditableStartParameterContainer)}
-	 * must be called after processing all command line parameters.
-	 *
-	 * @return TRUE/FALSE, see description above.
-	 */
-	public boolean hasDefaultParameter();
+	default boolean hasDefaultParameter() {
+		return false;
+	}
 
 	/**
 	 * If a default value exists AND the option in question was not defined on the command line (can be determined by

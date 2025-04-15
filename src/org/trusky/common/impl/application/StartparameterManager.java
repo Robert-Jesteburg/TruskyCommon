@@ -14,6 +14,7 @@ import org.trusky.common.api.startparameters.StartOption;
 import org.trusky.common.api.startparameters.builder.OptionParserBuilder;
 import org.trusky.common.api.startparameters.exceptions.StartParameterException;
 import org.trusky.common.api.startparameters.optionvalue.OptionValue;
+import org.trusky.common.api.startparameters.parser.StartOptionParser;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public interface StartparameterManager {
 	 *
 	 * @param parameterBuilderList List of builders, must not be NULL.
 	 */
-	void prepareParameters(List<OptionParserBuilder> parameterBuilderList);
+	void prepareParameters(List<StartOptionParser> parameterBuilderList);
 
 	/**
 	 * Do the actual parsing.

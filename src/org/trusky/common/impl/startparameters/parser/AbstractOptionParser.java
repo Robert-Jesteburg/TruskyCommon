@@ -53,11 +53,13 @@ public abstract class AbstractOptionParser<DEFAULT_PARAM_TYPE> implements StartO
 		// Does nothimg by default
 	}
 
-	protected String getOptionName() {
+	@Override
+	public String getOptionName() {
 		return optionName;
 	}
 
-	protected Optional<DEFAULT_PARAM_TYPE> getDefaultParamValue() {
+	@Override
+	public Optional<DEFAULT_PARAM_TYPE> getDefaultParamValue() {
 		return defaultParamValueOpt;
 	}
 
@@ -65,11 +67,6 @@ public abstract class AbstractOptionParser<DEFAULT_PARAM_TYPE> implements StartO
 	@Override
 	public boolean canParse(CommandLine cmdLine) {
 		return getOptionName().equals(cmdLine.peekNext());
-	}
-
-	@Override
-	public boolean hasDefaultParameter() {
-		return false;
 	}
 
 	@Override
