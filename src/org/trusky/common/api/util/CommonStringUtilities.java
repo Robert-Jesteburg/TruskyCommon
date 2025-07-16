@@ -1,6 +1,6 @@
 package org.trusky.common.api.util;
 
-public interface StringUtilities {
+public interface CommonStringUtilities {
 
 	public boolean isNullOrEmpty(String string);
 

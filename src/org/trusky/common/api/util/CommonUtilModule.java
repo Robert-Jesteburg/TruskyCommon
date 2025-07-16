@@ -19,10 +19,11 @@ public class CommonUtilModule extends AbstractModule {
 	protected void configure() {
 		super.configure();
 
-		bind(StringUtilities.class).to(StringUtilitiesImpl.class);
+		bind(CommonStringUtilities.class).to(CommonStringUtilitiesImpl.class);
 		bind(CommonSystemSettings.class).to(CommonSystemSettingsImpl.class);
 		bind(CommonStartparametersUtils.class).to(CommonStartParametersUtilImpl.class);
 		bind(CommonLog4JConfigurationUtils.class).to(CommonLog4JConfigurationUtilsImpl.class);
 		bind(CommonFileUtilities.class).to(CommonFileUtilitiesImpl.class);
+		bind(CommonPathBuilder.class).to(CommonPathBuilderImpl.class);
 	}
 }

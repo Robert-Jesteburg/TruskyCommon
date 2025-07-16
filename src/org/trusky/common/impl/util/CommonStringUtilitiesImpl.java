@@ -1,8 +1,8 @@
 package org.trusky.common.impl.util;
 
-import org.trusky.common.api.util.StringUtilities;
+import org.trusky.common.api.util.CommonStringUtilities;
 
-public class StringUtilitiesImpl implements StringUtilities {
+public class CommonStringUtilitiesImpl implements CommonStringUtilities {
 
 	@Override
 	public boolean isNullOrEmpty(String string) {

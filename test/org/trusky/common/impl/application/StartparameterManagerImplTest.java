@@ -86,11 +86,11 @@ class StartparameterManagerImplTest {
 		StartparameterManager sut = getSut();
 
 		// First initialisation is expected to succeed
-		sut.prepareParameters(List.of(builder));
+		sut.prepareParameters(List.of(builder.build()));
 
 		// Second call has to fail
 		try {
-			sut.prepareParameters(List.of(builder));
+			sut.prepareParameters(List.of(builder.build()));
 			fail("Method call was expected to fail with an exception");
 
 		} catch (IllegalStateException e) {
@@ -132,7 +132,7 @@ class StartparameterManagerImplTest {
 
 		StartparameterManager sut = getSut();
 
-		sut.prepareParameters(List.of(builder));
+		sut.prepareParameters(List.of(builder.build()));
 
 		try {
 			List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>> startOptionList = sut.getOption(
@@ -162,7 +162,7 @@ class StartparameterManagerImplTest {
 		StartparameterManager sut = getSut();
 
 		// First initialisation is expected to succeed
-		sut.prepareParameters(List.of(builder));
+		sut.prepareParameters(List.of(builder.build()));
 
 		try {
 			sut.parseCommandLine(null);
@@ -188,7 +188,7 @@ class StartparameterManagerImplTest {
 
 		StartparameterManager sut = getSut();
 
-		sut.prepareParameters(List.of(builder));
+		sut.prepareParameters(List.of(builder.build()));
 
 		String[] args = new String[]{builder.getOptionName(), //
 				"~/"};
@@ -222,7 +222,7 @@ class StartparameterManagerImplTest {
 		ParamDirNameOptionParserBuilder builder = InjectorFactory.getInstance(ParamDirNameOptionParserBuilder.class);
 
 		StartparameterManager sut = getSut();
-		sut.prepareParameters(List.of(builder));
+		sut.prepareParameters(List.of(builder.build()));
 		sut.parseCommandLine(new String[]{});
 		List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>> startOptionList =
 				sut.getOption(builder.getOptionName());
@@ -249,7 +249,7 @@ class StartparameterManagerImplTest {
 		builder.setDefaultOptionValue(DEFAULT_VALUE);
 
 		StartparameterManager sut = getSut();
-		sut.prepareParameters(List.of(builder));
+		sut.prepareParameters(List.of(builder.build()));
 		sut.parseCommandLine(new String[]{});
 		List<StartOption<? extends OptionValue<?>, ? extends OptionValue<?>>> startOptionList =
 				sut.getOption(builder.getOptionName());

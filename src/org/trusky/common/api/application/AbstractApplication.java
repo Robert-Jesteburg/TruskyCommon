@@ -33,6 +33,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public abstract class AbstractApplication implements CommonApplication {
 
@@ -89,6 +90,13 @@ public abstract class AbstractApplication implements CommonApplication {
 		}
 
 		setupLogging(baseDirOptionName, appDirOptionName, log4JOptionName);
+	}
+
+	protected Function<String, String> getOptionFromNameFunction() {
+		return o -> commonStartparametersUtils.getStringStartparameterWithDefault( //
+				o, //
+				name -> commonStartparametersUtils.toStringOptionList(startparameterManager.getOption(name)), //
+				"");
 	}
 
 	/**
@@ -182,7 +190,7 @@ public abstract class AbstractApplication implements CommonApplication {
 			System.err.println(errString);
 			throw new IllegalArgumentException(errString);
 
-		} else if(log4JBuilders.isEmpty()) {
+		} else if (log4JBuilders.isEmpty()) {
 
 			Log4JOptionParserBuilder log4JOptionParserBuilder =
 					InjectorFactory.getInstance(Log4JOptionParserBuilder.class);

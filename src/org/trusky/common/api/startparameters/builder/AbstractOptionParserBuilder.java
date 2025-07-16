@@ -1,7 +1,7 @@
 package org.trusky.common.api.startparameters.builder;
 
 import org.trusky.common.api.injection.InjectorFactory;
-import org.trusky.common.api.util.StringUtilities;
+import org.trusky.common.api.util.CommonStringUtilities;
 
 import java.util.Optional;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
  */
 public abstract class AbstractOptionParserBuilder<BUILDER, DEFAULT_PARAM_TYPE> {
 
-	private final StringUtilities stringUtilities;
+	private final CommonStringUtilities commonStringUtilities;
 	private String optionName;
 	private boolean isCaseSensitive;
 	private Optional<DEFAULT_PARAM_TYPE> defaultPameterValueOpt = Optional.empty();
@@ -22,8 +22,8 @@ public abstract class AbstractOptionParserBuilder<BUILDER, DEFAULT_PARAM_TYPE> {
 
 	protected AbstractOptionParserBuilder(String optionName, boolean isCaseSensitive,
 										  DEFAULT_PARAM_TYPE defaultOptionValue) {
-		stringUtilities = InjectorFactory.getInjector()
-				.getInstance(StringUtilities.class);
+		commonStringUtilities = InjectorFactory.getInjector()
+				.getInstance(CommonStringUtilities.class);
 
 		checkOptionName(optionName);
 
@@ -41,11 +41,11 @@ public abstract class AbstractOptionParserBuilder<BUILDER, DEFAULT_PARAM_TYPE> {
 	 */
 	protected void checkOptionName(String optionName) throws IllegalArgumentException {
 
-		if (stringUtilities.isNullOrEmpty(optionName)) {
+		if (commonStringUtilities.isNullOrEmpty(optionName)) {
 			throw new IllegalArgumentException("The option name must not be NULL ode empty.");
 		}
 
-		if (stringUtilities.isWhitespaceOnly(optionName)) {
+		if (commonStringUtilities.isWhitespaceOnly(optionName)) {
 			throw new IllegalArgumentException("The option name must not consist of whitespaces.");
 		}
 

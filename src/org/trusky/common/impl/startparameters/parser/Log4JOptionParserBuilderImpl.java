@@ -29,6 +29,8 @@ public class Log4JOptionParserBuilderImpl extends
 
 	@Override
 	public Log4JOptionParser build() {
-		return new Log4JOptionParserImpl(getOptionName());
+
+		return getDefaultParameterValue().isEmpty() ?  new Log4JOptionParserImpl(getOptionName()) :
+				new Log4JOptionParserImpl(getOptionName(), getDefaultParameterValue().get());
 	}
 }

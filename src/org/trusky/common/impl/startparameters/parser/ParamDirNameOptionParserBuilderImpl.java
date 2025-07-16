@@ -23,6 +23,12 @@ public class ParamDirNameOptionParserBuilderImpl extends
 
 
 	@Override
+	public ParamDirNameOptionParserBuilder setDefaultValue(String defaultValue) {
+		super.setDefaultParameterValue(defaultValue);
+		return this;
+	}
+
+	@Override
 	public ParamDirNameOptionParser build() {
 		return getDefaultParameterValue().isPresent() ? new ParamDirNameOptionParserImpl(getOptionName(), true,
 				getDefaultParameterValue().get()) : new ParamDirNameOptionParserImpl(getOptionName());

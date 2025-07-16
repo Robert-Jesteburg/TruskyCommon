@@ -11,9 +11,15 @@
 package org.trusky.common.api.application;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 public interface CommonApplication {
 
 	void prepareInjector();
-	void run(String[] args) throws IOException;
+
+	void run(String[] args)
+	throws IOException, CertificateException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException;
 }

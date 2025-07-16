@@ -21,6 +21,10 @@ public class Log4JOptionParserImpl extends AbstractOptionParser<String> implemen
 		super(optionName);
 	}
 
+	public Log4JOptionParserImpl(String optionName, String defaultValue) {
+		super(optionName, defaultValue);
+	}
+
 
 	@Override
 	public void parse(CommandLine cmdLine, EditableStartParameterContainer parameterContainer)
