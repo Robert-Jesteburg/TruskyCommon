@@ -10,14 +10,9 @@
 
 package org.trusky.common.api.application;
 
-/* If JavaFX is not present on the module path during compilation in some
- * environments, avoid a hard dependency here to keep the module compilable.
- * The class intentionally does not extend javafx.application.Application
- * to allow compiling without JavaFX. If JavaFX is required at runtime,
- * consider adding a small adapter class that extends Application in a
- * separate module which requires javafx.graphics.
- */
-public abstract class AbstractFxApplication {
+import javafx.application.Application;
+
+public abstract class AbstractFxApplication extends Application {
 
 	public static void main(String[] args) {
 

@@ -2,7 +2,7 @@ package org.trusky.common.api.configuration;
 
 import java.io.IOException;
 
-public interface ConfigurationReader<CONFIGTYPE extends Configuration> {
+public interface ConfigurationReader {
 
 	// Some general property names
 	public static final String STANDARD_PORT = "connection.port";
@@ -13,5 +13,5 @@ public interface ConfigurationReader<CONFIGTYPE extends Configuration> {
 	public static final String KEYMANAGER_TYPE = "keymanager.type"; // "SunX509"
 	public static final String SSL_TYPE = "ssl.type"; // "TLS"
 
-	CONFIGTYPE readConfiguration(String fullPath) throws IOException;
+	Configuration readConfiguration(String fullPath) throws IOException;
 }

@@ -15,7 +15,6 @@ import org.trusky.common.api.startparameters.builder.module.CommonParserBuilderM
 import org.trusky.common.api.startparameters.module.CommonStartparametersModule;
 import org.trusky.common.api.util.CommonUtilModule;
 import org.trusky.common.impl.application.CommonApplicationModule;
-import org.trusky.common.impl.configuration.CommonConfigurationModule;
 import org.trusky.common.impl.logging.CommonLog4JModule;
 
 /**
@@ -33,8 +32,6 @@ public class CommonGuiceModule extends AbstractModule {
 		install(new CommonUtilModule());
 		install(new CommonApplicationModule());
 		install(new CommonLog4JModule());
-		install(new CommonConfigurationModule());
-		install(new CommonUtilModule());
 
 
 		//bind(CommandLine.class).to(CommandLineImpl.class);
