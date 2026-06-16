@@ -1,8 +1,10 @@
 package org.trusky.common.api.network.message;
 
+import org.trusky.common.api.injection.InjectorFactory;
 import org.trusky.common.api.network.message.parser.CommonMessageParser;
 import org.trusky.common.api.network.message.type.CommonMessage;
 import org.trusky.common.api.network.message.type.CommonMessageType;
+import org.trusky.common.api.network.message.util.CommonMessageSerializer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +19,11 @@ public class ShutdownAckMessage extends CommonMessage {
 	private final String reply;
 
 	public ShutdownAckMessage(String reply) {
-		super(TYPE);
+		this(InjectorFactory.getInstance(CommonMessageSerializer.class), reply);
+	}
+
+	public ShutdownAckMessage(CommonMessageSerializer serializer, String reply) {
+		super(serializer, TYPE);
 		this.reply = reply;
 	}
 
@@ -31,13 +37,15 @@ public class ShutdownAckMessage extends CommonMessage {
 		return reply.getBytes(StandardCharsets.UTF_8);
 	}
 
-	public static ShutdownAckMessage parse(InputStream in, int length) throws IOException {
-		byte[] buf = CommonMessage.readPayload(in, length);
-		return new ShutdownAckMessage(new String(buf, StandardCharsets.UTF_8));
+	public static ShutdownAckMessage parse(CommonMessageSerializer serializer, InputStream in) throws IOException {
+
+		CommonMessageSerializer.MessageComponents messageComponents = serializer.deserializeMessage(in);
+		return new ShutdownAckMessage(new String(messageComponents.payloadBytes(), StandardCharsets.UTF_8));
 	}
 
 	static {
-		CommonMessageParser.register(TYPE, ShutdownAckMessage::parse);
+		InjectorFactory.getInstance(CommonMessageParser.class)
+				.register(TYPE, ShutdownAckMessage::parse);
 	}
 
 	@Override

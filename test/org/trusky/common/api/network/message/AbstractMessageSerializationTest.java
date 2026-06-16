@@ -1,5 +1,6 @@
 package org.trusky.common.api.network.message;
 
+import org.trusky.common.api.injection.InjectorFactory;
 import org.trusky.common.api.network.message.parser.CommonMessageParser;
 import org.trusky.common.api.network.message.type.CommonMessage;
 import org.trusky.common.api.network.message.type.CommonMessageHeader;
@@ -28,12 +29,13 @@ public abstract class AbstractMessageSerializationTest<MESSAGE_TYPE extends Comm
 
 		byte[] writtenBytes = out.toByteArray();
 		assertThat(writtenBytes.length) //
-				.as("The count of bytes written does not matsch the expected byte count") //
+				.as("The count of bytes written does not match the expected byte count") //
 				.isEqualTo(CommonMessageHeader.HEADER_SIZE + message.serializePayload().length);
 
 		ByteArrayInputStream in = new ByteArrayInputStream(writtenBytes);
 
-		CommonMessage copy = CommonMessageParser.readMessage(in);
+		CommonMessage copy = InjectorFactory.getInstance(CommonMessageParser.class)
+				.readMessage(in);
 		assertAll( //
 				() -> assertThat(copy.getType()).as("Object types differ.")
 						.isEqualTo(message.getType()), //

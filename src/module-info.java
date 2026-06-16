@@ -3,7 +3,6 @@ open module org.trusky.common {
 	requires com.google.guice;
 	requires javafx.graphics;
 	requires javax.inject;
-	requires mockito.all;
 	requires com.google.common;
 	requires org.apache.logging.log4j;
 	requires org.jetbrains.annotations;

@@ -1,5 +1,7 @@
 package org.trusky.common.api.network.message.type;
 
+import org.trusky.common.api.network.message.util.CommonMessageSerializer;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,23 +13,44 @@ import java.util.Objects;
  */
 public abstract class CommonMessage {
 
+	private final CommonMessageSerializer messageSerializer;
 	private final CommonMessageType type;
 
-	protected CommonMessage(CommonMessageType type) {
+//	protected CommonMessage(CommonMessageType type) {
+//		this(InjectorFactory.getInstance(CommonMessageSerializer.class), type);
+//	}
+
+	protected CommonMessage(CommonMessageSerializer messageSerializer, CommonMessageType type) {
 		this.type = type;
+		this.messageSerializer = messageSerializer;
 	}
 
 	public CommonMessageType getType() {
 		return type;
 	}
 
-	public abstract byte[] serializePayload();
-
-	public final void writeTo(OutputStream out) throws IOException {
-		byte[] payload = serializePayload();
-		new CommonMessageHeader(type.getCode(), payload.length).writeTo(out);
-		out.write(payload);
+	public void writeTo(OutputStream outputStream) {
+		// FIXME entfernen, dann den Test anpassen
 	}
+
+	/**
+	 * Serializes this CommonMessage to a byte array.
+	 * Format: CommonMessageType bytes + Payload bytes
+	 *
+	 * @return the serialized byte array
+	 */
+	public byte[] toByteArray() {
+		byte[] typeBytes = type.toByteArray();
+		byte[] payloadBytes = serializePayload();
+
+		byte[] result = new byte[typeBytes.length + payloadBytes.length];
+		System.arraycopy(typeBytes, 0, result, 0, typeBytes.length);
+		System.arraycopy(payloadBytes, 0, result, typeBytes.length, payloadBytes.length);
+
+		return result;
+	}
+
+	public abstract byte[] serializePayload();
 
 	protected static byte[] readPayload(InputStream in, int length) throws IOException {
 		byte[] buf = in.readNBytes(length);
@@ -52,5 +75,7 @@ public abstract class CommonMessage {
 
 		return Objects.equals(this.getType(), other.getType());
 	}
+
+
 }
 
