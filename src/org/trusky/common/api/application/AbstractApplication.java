@@ -76,10 +76,6 @@ public abstract class AbstractApplication implements CommonApplication {
 		 */
 		prepareLoggingConfigurationIfNotPresent(optionParserBuilders);
 
-		String log4JOptionName = computeLog4JOptionName(optionParserBuilders);
-		String baseDirOptionName = computeBaseDirOptionName(optionParserBuilders);
-		String appDirOptionName = computeParamDirName(optionParserBuilders);
-
 		startparameterManager.prepareParameters(optionParserBuilders);
 		try {
 			startparameterManager.parseCommandLine(args);
@@ -88,6 +84,10 @@ public abstract class AbstractApplication implements CommonApplication {
 
 			throw new RuntimeException(e);
 		}
+
+		String log4JOptionName = computeLog4JOptionName(optionParserBuilders);
+		String baseDirOptionName = computeBaseDirOptionName(optionParserBuilders);
+		String appDirOptionName = computeParamDirName(optionParserBuilders);
 
 		setupLogging(baseDirOptionName, appDirOptionName, log4JOptionName);
 	}

@@ -11,6 +11,12 @@
 package org.trusky.common.api.util;
 
 import com.google.inject.AbstractModule;
+import org.trusky.common.api.network.message.parser.CommonMessageParser;
+import org.trusky.common.api.network.message.util.CommonIntSerializer;
+import org.trusky.common.api.network.message.util.CommonMessageSerializer;
+import org.trusky.common.impl.network.message.parser.CommonMessageParserImpl;
+import org.trusky.common.impl.network.message.util.CommonIntSerializerImpl;
+import org.trusky.common.impl.network.message.util.CommonMessageSerializerImpl;
 import org.trusky.common.impl.util.*;
 
 public class CommonUtilModule extends AbstractModule {
@@ -25,5 +31,10 @@ public class CommonUtilModule extends AbstractModule {
 		bind(CommonLog4JConfigurationUtils.class).to(CommonLog4JConfigurationUtilsImpl.class);
 		bind(CommonFileUtilities.class).to(CommonFileUtilitiesImpl.class);
 		bind(CommonPathBuilder.class).to(CommonPathBuilderImpl.class);
+		bind(CommonMessageParser.class).to(CommonMessageParserImpl.class);
+		bind(CommonIntSerializer.class).to(CommonIntSerializerImpl.class);
+		bind(CommonMessageSerializer.class).to(CommonMessageSerializerImpl.class);
+
+		// FIXME hier die Serializer eintragen!
 	}
 }
