@@ -1,6 +1,6 @@
 package org.trusky.common.api.configuration;
 
-public interface KeystoreConfiguration {
+public interface KeystoreConfiguration extends Configuration {
 
 	String getKeystoreType();
 

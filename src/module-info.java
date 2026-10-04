@@ -6,6 +6,7 @@ open module org.trusky.common {
 	requires com.google.common;
 	requires org.apache.logging.log4j;
 	requires org.jetbrains.annotations;
+	requires java.sql;
 
 	exports org.trusky.common.api.application;
 	exports org.trusky.common.api.injection;

@@ -1,6 +1,6 @@
 package org.trusky.common.impl.network;
 
-import org.trusky.common.api.configuration.Configuration;
+import org.trusky.common.api.configuration.ServerConfiguration;
 import org.trusky.common.api.injection.InjectorFactory;
 import org.trusky.common.api.logging.CommonLogger;
 import org.trusky.common.api.logging.CommonLoggerFactory;
@@ -47,7 +47,7 @@ public class CommonNetworkSocketHandlerImpl implements CommonNetworkSocketHandle
 	}
 
 	@Override
-	public void initForTLSServer(Configuration configuration,
+	public void initForTLSServer(ServerConfiguration configuration,
 								 CommonConnectionProcessorFactory connectionProcessorFactory,
 								 CommonShutdownSocketFactory commonShutdownSocketFactory)
 	throws Exception {
@@ -123,7 +123,7 @@ public class CommonNetworkSocketHandlerImpl implements CommonNetworkSocketHandle
 			LOGGER = clf.getLogger(this.getClass());
 		}
 
-		public void executeConnectionLoop(Configuration configuration,
+		public void executeConnectionLoop(ServerConfiguration configuration,
 										  CommonConnectionProcessorFactory connectionProcessorFactory,
 										  CommonSSLServerSocketFactory serverSocketFactory,
 										  CommonFlagContainer shutdownFlag)
@@ -176,7 +176,7 @@ public class CommonNetworkSocketHandlerImpl implements CommonNetworkSocketHandle
 			LOGGER = clf.getLogger(this.getClass());
 		}
 
-		void configureShutdown(Configuration configuration, CommonSSLServerSocketFactory serverSocketFactory,
+		void configureShutdown(ServerConfiguration configuration, CommonSSLServerSocketFactory serverSocketFactory,
 							   CommonShutdownSocketFactory commonShutdownSocketFactory,
 							   CommonFlagContainer shutdownFlag)
 		throws IOException {

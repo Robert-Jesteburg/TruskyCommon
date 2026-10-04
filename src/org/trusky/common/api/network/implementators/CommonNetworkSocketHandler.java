@@ -1,6 +1,6 @@
 package org.trusky.common.api.network.implementators;
 
-import org.trusky.common.api.configuration.Configuration;
+import org.trusky.common.api.configuration.ServerConfiguration;
 import org.trusky.common.api.network.implementators.factory.CommonConnectionProcessorFactory;
 import org.trusky.common.api.network.implementators.factory.CommonShutdownSocketFactory;
 
@@ -16,7 +16,7 @@ public interface CommonNetworkSocketHandler {
 	 *                                    checks before actually shutting down by setting the shutdown flag).
 	 * @throws Exception There are plenty of socket and TLS related exceptions that can occur.
 	 */
-	void initForTLSServer(Configuration configuration, CommonConnectionProcessorFactory connectionProcessorFactory,
+	void initForTLSServer(ServerConfiguration configuration, CommonConnectionProcessorFactory connectionProcessorFactory,
 						  CommonShutdownSocketFactory commonShutdownSocketFactory)
 	throws Exception;
 }
