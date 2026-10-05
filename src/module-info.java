@@ -21,5 +21,6 @@ open module org.trusky.common {
 	// exports org.trusky.common.api.startparameters.util; // Currently no classes inside it
 	exports org.trusky.common.api.util;
 	exports org.trusky.common.api.configuration;
+	exports org.trusky.common.api.database;
 
 }
